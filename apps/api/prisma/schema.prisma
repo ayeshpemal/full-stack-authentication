@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  slug  String  @unique @db.VarChar(255)
+  title String  @db.VarChar(255)
+  img   String? @db.VarChar(255)
+  Post  Post[]
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  text      String
+  createdat DateTime? @default(now()) @db.Timestamp(6)
+  user_id   Int
+  post_id   Int
+  Post      Post      @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_post")
+  User      User      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_user")
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  createdat   DateTime? @default(now()) @db.Timestamp(6)
+  slug        String    @unique @db.VarChar(255)
+  title       String    @db.VarChar(255)
+  description String
+  img         String?   @db.VarChar(255)
+  views       Int?      @default(0)
+  catslug     String    @db.VarChar(255)
+  useremail   String    @db.VarChar(255)
+  Comment     Comment[]
+  Category    Category  @relation(fields: [catslug], references: [slug], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_category")
+  User        User      @relation(fields: [useremail], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_user")
+}
+
+model User {
+  id                 Int       @id @default(autoincrement())
+  email              String    @unique @db.VarChar(255)
+  name               String    @db.VarChar(255)
+  password           String    @db.VarChar(255)
+  hashedrefreshtoken String?
+  role               Role?     @default(USER)
+  Comment            Comment[]
+  Post               Post[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  USER
+}
