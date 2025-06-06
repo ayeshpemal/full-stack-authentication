@@ -8,48 +8,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id    Int     @id @default(autoincrement())
-  slug  String  @unique @db.VarChar(255)
-  title String  @db.VarChar(255)
-  img   String? @db.VarChar(255)
-  Post  Post[]
-}
-
 model Comment {
   id        Int       @id @default(autoincrement())
   text      String
-  createdat DateTime? @default(now()) @db.Timestamp(6)
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
   user_id   Int
+  user      User      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_author_id_users_id_fk")
   post_id   Int
-  Post      Post      @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_post")
-  User      User      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_user")
+  post      Post      @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_post_id_posts_id_fk")
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
-  createdat   DateTime? @default(now()) @db.Timestamp(6)
-  slug        String    @unique @db.VarChar(255)
-  title       String    @db.VarChar(255)
-  description String
-  img         String?   @db.VarChar(255)
-  views       Int?      @default(0)
-  catslug     String    @db.VarChar(255)
-  useremail   String    @db.VarChar(255)
-  Comment     Comment[]
-  Category    Category  @relation(fields: [catslug], references: [slug], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_category")
-  User        User      @relation(fields: [useremail], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "fk_post_user")
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  slug      String    @unique
+  title     String
+  desc      String
+  img       String?
+  views     Int       @default(0)
+  catSlug   String
+  cat       Category  @relation(fields: [catSlug], references: [slug])
+  userEmail String
+  user      User      @relation(fields: [userEmail], references: [email])
+  comments  Comment[]
 }
 
 model User {
   id                 Int       @id @default(autoincrement())
-  email              String    @unique @db.VarChar(255)
-  name               String    @db.VarChar(255)
-  password           String    @db.VarChar(255)
-  hashedrefreshtoken String?
-  role               Role?     @default(USER)
-  Comment            Comment[]
-  Post               Post[]
+  email              String    @unique
+  name               String
+  password           String
+  hashedRefreshToken String?
+  role               Role      @default(USER)
+  comments           Comment[]
+  posts              Post[]
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  slug  String  @unique
+  title String
+  img   String?
+  Posts Post[]
 }
 
 enum Role {
