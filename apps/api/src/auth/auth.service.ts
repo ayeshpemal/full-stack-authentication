@@ -15,10 +15,17 @@ export class AuthService {
     async validateLocalUser(email: string, password: string) {
         const user = await this.userService.findByEmail(email);
         if (!user) throw new UnauthorizedException('User not found!');
-        const isPasswordMatched = verify(user.password, password);
-        if (!isPasswordMatched)
-          throw new UnauthorizedException('Invalid Credentials!');
-    
-        return { id: user.id, name: user.name  };
+        
+        try {
+            // Add await and use correct parameter order
+            const isPasswordMatched = await verify(user.password, password);
+            
+            if (!isPasswordMatched)
+                throw new UnauthorizedException('Invalid Credentials!');
+            
+            return { id: user.id, name: user.name };
+        } catch (error) {
+            throw new UnauthorizedException('Invalid Credentials!');
+        }
     }
 }
