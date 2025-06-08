@@ -71,30 +71,42 @@ export class AuthService {
         return currentUser;
       }
     
-    //   async validateRefreshToken(userId: number, refreshToken: string) {
-    //     const user = await this.userService.findOne(userId);
-    //     if (!user) throw new UnauthorizedException('User not found!');
+      async validateRefreshToken(userId: number) {
+        const user = await this.userService.findOne(userId);
+        if (!user) throw new UnauthorizedException('User not found!');
+        const currentUser = { id: user.id };
     
-    //     const refreshTokenMatched = await verify(
-    //       user.hashedRefreshToken,
-    //       refreshToken,
-    //     );
+        // const refreshTokenMatched = await verify(
+        //   user.hashedRefreshToken,
+        //   refreshToken,
+        // );
     
     //     if (!refreshTokenMatched)
     //       throw new UnauthorizedException('Invalid Refresh Token!');
     //     const currentUser = { id: user.id };
-    //     return currentUser;
-    //   }
+        return currentUser;
+      }
     
-    //   async refreshToken(userId: number, name: string) {
-    //     const { accessToken, refreshToken } = await this.generateTokens(userId);
-    //     const hashedRT = await hash(refreshToken);
-    //     await this.userService.updateHashedRefreshToken(userId, hashedRT);
-    //     return {
-    //       id: userId,
-    //       name: name,
-    //       accessToken,
-    //       refreshToken,
-    //     };
-    //   }
+      async refreshToken(userId: number, name: string) {
+        const { accessToken, refreshToken } = await this.generateTokens(userId);
+        //const hashedRT = await hash(refreshToken);
+        //await this.userService.updateHashedRefreshToken(userId, hashedRT);
+        return {
+          id: userId,
+          name: name,
+          accessToken,
+          refreshToken,
+        };
+      }
+
+      async validateGoogleUser(googleUser: CreateUserDto) {
+        const user = await this.userService.findByEmail(googleUser.email);
+        if (user) return user;
+        return await this.userService.create(googleUser);
+      }
+    
+      // async signOut(userId: number) {
+      //   return await this.userService.updateHashedRefreshToken(userId, null);
+      // }
+    
 }

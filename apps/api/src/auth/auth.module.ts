@@ -10,13 +10,15 @@ import jwtConfig from './config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import refreshConfig from './config/refresh.config';
+import googleOauthConfig from './config/google-oauth.config';
 
 @Module({
   imports: [
     PassportModule, 
     JwtModule.registerAsync(jwtConfig.asProvider()), 
     ConfigModule.forFeature(jwtConfig),
-    ConfigModule.forFeature(refreshConfig)
+    ConfigModule.forFeature(refreshConfig),
+    ConfigModule.forFeature(googleOauthConfig),
   ],
   controllers: [AuthController],
   providers: [AuthService, UserService, PrismaService, LocalStrategy, JwtStrategy],
