@@ -8,7 +8,7 @@ export type Session = {
         id: string;
         name: string;
     }
-    // accessToken: string;
+    accessToken: string;
     // refreshToken: string;
 }
 
@@ -44,4 +44,8 @@ export async function getSession(){
         console.error("Failed to verify session token", err);
         redirect("/auth/signin");
     }
+}
+
+export async function deleteSession(){
+    await (await cookies()).delete("session");
 }

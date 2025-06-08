@@ -22,6 +22,8 @@
     "packages/*"
   ],
   "dependencies": {
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/jwt": "^11.0.0",
     "jose": "^6.0.11",
     "zod": "^3.25.55"
   }

@@ -2,10 +2,12 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { verify } from 'argon2';
+import { AuthJwtPayload } from './types/auth.jwtPayload';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
     async registerUser(createUserDto: CreateUserDto) {
         const user = await this.userService.findByEmail(createUserDto.email);
         if (user) throw new ConflictException('User already exists with this email');
@@ -28,4 +30,64 @@ export class AuthService {
             throw new UnauthorizedException('Invalid Credentials!');
         }
     }
+
+    async login(userId: number, name: string) {
+        const { accessToken } = await this.generateTokens(userId);
+        //const hashedRT = await hash(refreshToken);
+        //await this.userService.updateHashedRefreshToken(userId, hashedRT);
+        return {
+          id: userId,
+          name: name,
+          //role,
+          accessToken,
+          //refreshToken,
+        };
+      }
+    
+      async generateTokens(userId: number) {
+        const payload: AuthJwtPayload = { sub: userId };
+        const [accessToken] = await Promise.all([
+          this.jwtService.signAsync(payload),
+          //this.jwtService.signAsync(payload, this.refreshTokenConfig),
+        ]);
+    
+        return {
+          accessToken,
+          //refreshToken,
+        };
+      }
+    
+    //   async validateJwtUser(userId: number) {
+    //     const user = await this.userService.findOne(userId);
+    //     if (!user) throw new UnauthorizedException('User not found!');
+    //     const currentUser = { id: user.id, role: user.role };
+    //     return currentUser;
+    //   }
+    
+    //   async validateRefreshToken(userId: number, refreshToken: string) {
+    //     const user = await this.userService.findOne(userId);
+    //     if (!user) throw new UnauthorizedException('User not found!');
+    
+    //     const refreshTokenMatched = await verify(
+    //       user.hashedRefreshToken,
+    //       refreshToken,
+    //     );
+    
+    //     if (!refreshTokenMatched)
+    //       throw new UnauthorizedException('Invalid Refresh Token!');
+    //     const currentUser = { id: user.id };
+    //     return currentUser;
+    //   }
+    
+    //   async refreshToken(userId: number, name: string) {
+    //     const { accessToken, refreshToken } = await this.generateTokens(userId);
+    //     const hashedRT = await hash(refreshToken);
+    //     await this.userService.updateHashedRefreshToken(userId, hashedRT);
+    //     return {
+    //       id: userId,
+    //       name: name,
+    //       accessToken,
+    //       refreshToken,
+    //     };
+    //   }
 }
