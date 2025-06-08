@@ -32,7 +32,7 @@ export class AuthService {
             if (!isPasswordMatched)
                 throw new UnauthorizedException('Invalid Credentials!');
             
-            return { id: user.id, name: user.name };
+            return { id: user.id, name: user.name, role: user.role };
         } catch (error) {
             throw new UnauthorizedException('Invalid Credentials!');
         }
@@ -67,7 +67,7 @@ export class AuthService {
       async validateJwtUser(userId: number) {
         const user = await this.userService.findOne(userId);
         if (!user) throw new UnauthorizedException('User not found!');
-        const currentUser = { id: user.id };
+        const currentUser = { id: user.id, role: user.role };
         return currentUser;
       }
     

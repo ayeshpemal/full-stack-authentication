@@ -14,6 +14,8 @@ import googleOauthConfig from './config/google-oauth.config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
+import { RefreshStrategy } from './strategies/refresh-token.strategy';
+import { RolesGuard } from './guards/roles/roles.guard';
 
 @Module({
   imports: [
@@ -30,11 +32,16 @@ import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
     PrismaService, 
     LocalStrategy, 
     JwtStrategy, 
+    RefreshStrategy,
     GoogleStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     }
-    ],
+  ],
 })
 export class AuthModule {}
