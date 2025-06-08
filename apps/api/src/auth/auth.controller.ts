@@ -7,14 +7,14 @@ import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("signup")
+  @Post('signup')
   registerUser(@Body() createUserDto: CreateUserDto) {
     return this.authService.registerUser(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post("signin")
-  login(@Request req){
+  @Post('signin')
+  login(@Request() req){
     return req.user;
   }
 }
