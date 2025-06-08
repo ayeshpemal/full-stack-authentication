@@ -1,5 +1,6 @@
 import React from 'react'
 import SignInForm from './signInPage'
+import { BACKEND_URL } from '@/lib/constants'
 
 const SignInPage = () => {
   return (
@@ -9,6 +10,8 @@ const SignInPage = () => {
       </h1>
 
       <SignInForm />
+      <hr />
+      <a href={`${BACKEND_URL}/auth/google/login`} className="text-blue-500 hover:underline">Sign In with Google</a>
     </div>
   )
 }
