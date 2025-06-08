@@ -12,6 +12,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import refreshConfig from './config/refresh.config';
 import googleOauthConfig from './config/google-oauth.config';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -22,6 +24,17 @@ import { GoogleStrategy } from './strategies/google.strategy';
     ConfigModule.forFeature(googleOauthConfig),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, PrismaService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [
+    AuthService, 
+    UserService, 
+    PrismaService, 
+    LocalStrategy, 
+    JwtStrategy, 
+    GoogleStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    }
+    ],
 })
 export class AuthModule {}
