@@ -23,7 +23,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   login(@Req() req){
-    return this.authService.login(req.user.id, req.user.name);
+    return this.authService.login(req.user.id, req.user.name, req.user.role);
   }
 
   @Roles('ADMIN', 'EDITOR')
@@ -49,8 +49,8 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleCallback(@Req() req, @Res() res: Response) {
-    const response = await this.authService.login(req.user.id, req.user.name);
-    res.redirect(`http://localhost:3000/api/auth/google/callback?userId=${response.id}&name=${response.name}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}`);
+    const response = await this.authService.login(req.user.id, req.user.name, req.user.role);
+    res.redirect(`http://localhost:3000/api/auth/google/callback?userId=${response.id}&name=${response.name}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`);
   }
 
   @Post('signout')

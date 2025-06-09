@@ -6,6 +6,7 @@ import { AuthJwtPayload } from './types/auth.jwtPayload';
 import { JwtService } from '@nestjs/jwt';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
+import { Role } from 'generated/prisma';
 
 @Injectable()
 export class AuthService {
@@ -38,14 +39,14 @@ export class AuthService {
         }
     }
 
-    async login(userId: number, name: string) {
+    async login(userId: number, name: string, role: Role) {
         const { accessToken, refreshToken } = await this.generateTokens(userId);
         const hashedRT = await hash(refreshToken);
         await this.userService.updateHashedRefreshToken(userId, hashedRT);
         return {
           id: userId,
           name: name,
-          //role,
+          role,
           accessToken,
           refreshToken,
         };
